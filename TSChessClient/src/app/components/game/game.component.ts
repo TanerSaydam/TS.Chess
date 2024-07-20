@@ -485,7 +485,80 @@ export default class GameComponent {
     return false;
   }
 
-  isGameOver(): boolean {
+  isGameOver(): boolean {    
+    //console.log("King in danger :" + this.isTheKingInDanger());
+    //console.log("King is checkmated :" + this.isKingCheckmated());
+    if (this.isTheKingInDanger() && this.isKingCheckmated()) {
+      console.log("Game over");
+      
+    }
     return false;
+  }
+
+  isKingCheckmated(): boolean {
+    const currentPlayerColor = this.whoIsTurn();
+    const kingPosition = this.games().find(
+      (piece) => piece.stone === "king" && piece.color === currentPlayerColor
+    );
+  
+    if (!kingPosition) {
+      return false;
+    }
+  
+    const possibleMoves = [
+      { rowChange: 1, columnChange: 0 },
+      { rowChange: -1, columnChange: 0 },
+      { rowChange: 0, columnChange: 1 },
+      { rowChange: 0, columnChange: -1 },
+      { rowChange: 1, columnChange: 1 },
+      { rowChange: 1, columnChange: -1 },
+      { rowChange: -1, columnChange: 1 },
+      { rowChange: -1, columnChange: -1 },
+    ];
+  
+    let isSafe: boolean[] = [];
+
+    for (const move of possibleMoves) {
+      const newRow = kingPosition.row + move.rowChange;
+      const newColumn = kingPosition.column + move.columnChange;
+      const newPos: GameModel = { row: newRow, column: newColumn, stone: kingPosition.stone, color: kingPosition.color };
+  
+      isSafe.push(this.isSafeSquareForKing(kingPosition, newPos));
+    } 
+    
+    const kingCanEscape = isSafe.includes(true);
+    
+    return !kingCanEscape;
+  }
+  
+  isSafeSquareForKing(king: GameModel, newPos: GameModel): boolean {
+    if (newPos.row < 1 || newPos.row > 8 || newPos.column < 1 || newPos.column > 8) {
+      return false;
+    }
+  
+    // Eğer yeni pozisyonda kendi taşı varsa, o pozisyona hareket edemez
+    const pieceAtNewPos = this.games().find(p => p.row === newPos.row && p.column === newPos.column);
+    if (pieceAtNewPos && pieceAtNewPos.color === king.color) {
+      return false;
+    }
+
+    const originalGames = [...this.games()];
+  
+    const newGames: GameModel[] = this.games().map(game => {
+      if (game.row === king.row && game.column === king.column) {
+        return { ...game, row: newPos.row, column: newPos.column };
+      } else if (game.row === newPos.row && game.column === newPos.column) {
+        return null;
+      }
+      return game;
+    }).filter(game => game !== null) as GameModel[];
+  
+    this.games.set(newGames);
+  
+    const isInDanger = this.isTheKingInDanger();
+  
+    this.games.set(originalGames);
+  
+    return !isInDanger;
   }
 }

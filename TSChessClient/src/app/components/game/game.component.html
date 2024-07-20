@@ -32,8 +32,8 @@
                     @for(history of histories(); let i = $index; track i) {
                         @if(i % 2 === 0) {
                             <tr>
-                                <td [innerHTML]="histories()[i]?.move || ''"></td>
-                                <td [innerHTML]="histories()[i + 1]?.move || ''"></td>
+                                <td [innerHTML]="histories()[i] ? histories()[i].move : ''"></td>
+                                <td [innerHTML]="histories()[i + 1] ? histories()[i + 1].move : ''"></td>
                             </tr>
                         }
                     }
