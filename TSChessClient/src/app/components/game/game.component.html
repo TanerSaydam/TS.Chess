@@ -1,0 +1,44 @@
+<h1 class="text-center">Welcome to my first Chess game</h1>
+
+<div class="board-part">
+    <div class="board-area">
+        <div class="options-area">
+            <button (click)="reset()">Reset Game</button>
+            <h3>Who is turn: {{whoIsTurn()}}</h3>
+        </div>
+        <div class="game-area">
+            @for(row of board().rows; track row; let iRow = $index){
+                <div class="column" [ngClass]="iRow % 2 == 0 ? 'white' : 'orange'">                
+                    @for(column of board().columns; track column; let iColumn = $index){
+                        <div class="column" [ngClass]="checkIfThisColumnIsSelected(row,column, iRow, iColumn)" (click)="selectOrMoveToStone(row,column)">
+                            <span>
+                                <i class="stone" [ngClass]="haveStone(row,column)"></i>
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="history-area">
+            <p>Game History</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Beyaz</th>
+                        <th>Siyah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(history of histories(); let i = $index; track i) {
+                        @if(i % 2 === 0) {
+                            <tr>
+                                <td [innerHTML]="histories()[i]?.move || ''"></td>
+                                <td [innerHTML]="histories()[i + 1]?.move || ''"></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
