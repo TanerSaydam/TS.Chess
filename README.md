@@ -1,0 +1,3 @@
+# TS.Chess
+
+## Angular ile tasarladığım Chess oyunu. Henüz bitmedi...
